@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rotating Box</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0e1116;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <script type="module">
+    import * as THREE from "three";
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0e1116);
+
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+    camera.position.set(2.2, 1.6, 2.8);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const geometry = new THREE.BoxGeometry(1.4, 1.4, 1.4);
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x4f8cff,
+      metalness: 0.15,
+      roughness: 0.35
+    });
+    const box = new THREE.Mesh(geometry, material);
+    scene.add(box);
+
+    const edges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(geometry),
+      new THREE.LineBasicMaterial({ color: 0xffffff })
+    );
+    box.add(edges);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    keyLight.position.set(3, 4, 2);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0x88aaff, 0.5);
+    fillLight.position.set(-3, 1, -2);
+    scene.add(fillLight);
+
+    function animate() {
+      box.rotation.x += 0.008;
+      box.rotation.y += 0.012;
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
